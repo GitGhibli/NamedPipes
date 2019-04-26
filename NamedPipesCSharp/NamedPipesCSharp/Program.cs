@@ -29,18 +29,17 @@ namespace NamedPipesCSharp
         {
             var task = Task.Factory.StartNew(() =>
             {
-                var server = new NamedPipeServerStream("MyTestPipe", PipeDirection.Out);
+                var server = new NamedPipeServerStream("MyTestPipe", PipeDirection.Out, 1, PipeTransmissionMode.Byte, PipeOptions.Asynchronous);
                 
                 server.WaitForConnection();
                 Console.WriteLine(String.Format("New Consumer connected: {0}", DateTime.Now.ToShortTimeString()));
-                var writer = new BinaryWriter(server);
                 Thread.Sleep(2000);
-                writer.Write(GetByteArray(new MyStruct { MyNumber = 1, MyAnotherNumber = 9027, MyText = "Hello World!", MyAnotherText = "Hello another World!" }));
-                writer.Flush();
-                writer.Write(GetByteArray(new MyStruct { MyNumber = 2, MyAnotherNumber = 9027, MyText = "Hello World!", MyAnotherText = "Hello another World!" }));
-                writer.Flush();
-                writer.Write(GetByteArray(new MyStruct { MyNumber = 3, MyAnotherNumber = 9027, MyText = "Hello World!", MyAnotherText = "Hello another World!" }));
-                writer.Flush();
+                server.Write(GetByteArray(new MyStruct { MyNumber = 1, MyAnotherNumber = 9027, MyText = "Hello World!", MyAnotherText = "Hello another World!" }));
+                Console.WriteLine("Struct Wrote");
+                server.Write(GetByteArray(new MyStruct { MyNumber = 2, MyAnotherNumber = 9027, MyText = "Hello World!", MyAnotherText = "Hello another World!" }));
+                Console.WriteLine("Struct Wrote");
+                server.Write(GetByteArray(new MyStruct { MyNumber = 3, MyAnotherNumber = 9027, MyText = "Hello World!", MyAnotherText = "Hello another World!" }));
+                Console.WriteLine("Struct Wrote");
                 server.Disconnect();
             });
 
